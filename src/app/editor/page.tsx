@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import OnePagerRenderer from "@/components/OnePagerRenderer";
 import { TEMPLATES, TemplateStyle } from "@/templates";
-import type { OnePagerContent } from "@/lib/openai";
+import type { OnePagerContent } from "@/lib/ai";
 
 export default function EditorPage() {
   const router = useRouter();

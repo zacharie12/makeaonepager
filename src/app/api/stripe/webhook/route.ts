@@ -1,41 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import crypto from "crypto";
 import { createServiceClient } from "@/lib/supabase";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover",
-});
+function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = hmac.update(payload).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const sig = request.headers.get("stripe-signature");
+  const signature = request.headers.get("x-signature") || "";
 
-  if (!sig) {
-    return NextResponse.json({ error: "No signature" }, { status: 400 });
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET!;
+
+  if (!verifyWebhookSignature(body, signature, secret)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  let event: Stripe.Event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    console.error("Webhook signature verification failed:", err);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-  }
-
+  const event = JSON.parse(body);
+  const eventName = event.meta?.event_name;
   const supabase = createServiceClient();
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const customerEmail = session.customer_details?.email;
+  switch (eventName) {
+    case "subscription_created":
+    case "subscription_updated": {
+      const customerEmail = event.data?.attributes?.user_email;
+      const status = event.data?.attributes?.status;
 
-      if (customerEmail) {
-        // Update user plan in profiles
+      if (customerEmail && status === "active") {
         await supabase
           .from("profiles")
           .update({ plan: "pro" })
@@ -44,17 +37,15 @@ export async function POST(request: NextRequest) {
       break;
     }
 
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const customer = await stripe.customers.retrieve(
-        subscription.customer as string
-      );
+    case "subscription_cancelled":
+    case "subscription_expired": {
+      const customerEmail = event.data?.attributes?.user_email;
 
-      if ("email" in customer && customer.email) {
+      if (customerEmail) {
         await supabase
           .from("profiles")
           .update({ plan: "free" })
-          .eq("email", customer.email);
+          .eq("email", customerEmail);
       }
       break;
     }

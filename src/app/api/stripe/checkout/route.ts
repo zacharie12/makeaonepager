@@ -1,40 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import { lemonSqueezySetup, createCheckout } from "@lemonsqueezy/lemonsqueezy.js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover",
-});
-
-const PRICE_MAP: Record<string, string> = {
-  pro: process.env.STRIPE_PRO_PRICE_ID!,
-  team: process.env.STRIPE_TEAM_PRICE_ID!,
+const VARIANT_MAP: Record<string, string> = {
+  pro: process.env.LEMONSQUEEZY_PRO_VARIANT_ID!,
+  team: process.env.LEMONSQUEEZY_TEAM_VARIANT_ID!,
 };
 
 export async function POST(request: NextRequest) {
   try {
-    const { planId } = await request.json();
-    const priceId = PRICE_MAP[planId];
+    lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
 
-    if (!priceId) {
+    const { planId } = await request.json();
+    const variantId = VARIANT_MAP[planId];
+
+    if (!variantId) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
+    // Get store ID from the API key's associated store
+    const storeId = process.env.LEMONSQUEEZY_STORE_ID!;
+
+    const checkout = await createCheckout(storeId, variantId, {
+      checkoutData: {
+        custom: {
+          plan_id: planId,
         },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"}/create?upgraded=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"}/create?cancelled=true`,
+      },
+      productOptions: {
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"}/create?upgraded=true`,
+      },
     });
 
-    return NextResponse.json({ url: session.url });
+    const url = checkout.data?.data?.attributes?.url;
+
+    if (!url) {
+      return NextResponse.json({ error: "Failed to create checkout" }, { status: 500 });
+    }
+
+    return NextResponse.json({ url });
   } catch (error) {
-    console.error("Stripe checkout error:", error);
+    console.error("LemonSqueezy checkout error:", error);
     return NextResponse.json(
       { error: "Failed to create checkout session" },
       { status: 500 }
