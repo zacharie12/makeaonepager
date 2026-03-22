@@ -221,9 +221,9 @@ export default function EditorPage() {
                     className="h-16"
                     style={{
                       background:
-                        tmpl.layout === "gradient"
+                        tmpl.layout === "gradient-glass"
                           ? `linear-gradient(135deg, ${tmpl.colors.primary}, ${tmpl.colors.secondary})`
-                          : tmpl.colors.background === "#ffffff" || tmpl.colors.background.startsWith("#f")
+                          : tmpl.colors.background === "#ffffff" || tmpl.colors.background.startsWith("#f") || tmpl.colors.background.startsWith("#F")
                           ? `linear-gradient(135deg, ${tmpl.colors.primary}, ${tmpl.colors.primary}dd)`
                           : tmpl.colors.background,
                     }}

@@ -41,7 +41,7 @@ function CreatePageContent() {
 
   const [step, setStep] = useState(preselectedType ? 2 : 1);
   const [selectedType, setSelectedType] = useState(preselectedType);
-  const [selectedTemplate, setSelectedTemplate] = useState("startup-classic");
+  const [selectedTemplate, setSelectedTemplate] = useState("yc-classic");
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Form state
@@ -374,9 +374,9 @@ function CreatePageContent() {
                       className="h-24 relative"
                       style={{
                         background:
-                          tmpl.layout === "gradient"
+                          tmpl.layout === "gradient-glass"
                             ? `linear-gradient(135deg, ${tmpl.colors.primary}, ${tmpl.colors.secondary})`
-                            : tmpl.colors.background === "#ffffff" || tmpl.colors.background.startsWith("#f")
+                            : tmpl.colors.background === "#ffffff" || tmpl.colors.background.startsWith("#f") || tmpl.colors.background.startsWith("#F")
                             ? `linear-gradient(135deg, ${tmpl.colors.primary}, ${tmpl.colors.primary}dd)`
                             : tmpl.colors.background,
                       }}
