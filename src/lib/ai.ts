@@ -152,8 +152,9 @@ async function generateWithGemini(input: OnePagerInput): Promise<OnePagerContent
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
   const systemPrompt = TYPE_PROMPTS[input.type] || TYPE_PROMPTS["company-overview"];
 
+  const modelName = GEMINI_MODEL.startsWith("models/") ? GEMINI_MODEL : `models/${GEMINI_MODEL}`;
   const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
+    model: modelName,
     contents: [{ role: "user", parts: [{ text: buildUserPrompt(input) }] }],
     config: {
       systemInstruction: systemPrompt,
