@@ -403,7 +403,11 @@ function CreatePageContent() {
               })}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <div className="text-xs text-gray-400 flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-green-400" />
+                Powered by Gemini 2.0 Flash (free)
+              </div>
               <button
                 onClick={handleGenerate}
                 disabled={isGenerating}

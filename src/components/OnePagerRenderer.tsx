@@ -16,7 +16,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import type { TemplateStyle } from "@/templates";
-import type { OnePagerContent } from "@/lib/openai";
+import type { OnePagerContent } from "@/lib/ai";
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>> = {
   target: Target,
