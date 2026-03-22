@@ -182,7 +182,7 @@ export default function PricingModal({ isOpen, onClose, currentPlan = "free" }: 
         </div>
 
         <div className="bg-gray-50 px-6 py-4 text-xs text-gray-400 text-center">
-          Secure payments powered by Stripe. Cancel anytime. SOC 2 compliant.
+          Secure payments. Cancel anytime.
         </div>
       </div>
     </div>

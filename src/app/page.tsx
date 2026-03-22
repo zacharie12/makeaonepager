@@ -346,15 +346,15 @@ export default function HomePage() {
           <div className="flex justify-center gap-8 text-sm text-gray-500">
             <div className="flex items-center gap-2">
               <Shield size={16} className="text-green-500" />
-              SOC 2 Compliant (Supabase)
+              Secure Authentication
             </div>
             <div className="flex items-center gap-2">
               <Shield size={16} className="text-green-500" />
-              Stripe Secure Payments
+              Encrypted Data Storage
             </div>
             <div className="flex items-center gap-2">
               <Shield size={16} className="text-green-500" />
-              Data Encrypted at Rest
+              Secure Payments
             </div>
           </div>
         </div>

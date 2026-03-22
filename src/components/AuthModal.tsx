@@ -192,7 +192,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: Props) {
         <div className="bg-gray-50 px-6 py-4 text-xs text-gray-400 text-center">
           By continuing, you agree to our Terms of Service and Privacy Policy.
           <br />
-          Your data is encrypted and SOC 2 compliant via Supabase.
+          Your data is securely stored and encrypted.
         </div>
       </div>
     </div>
